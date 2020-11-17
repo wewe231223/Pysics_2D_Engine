@@ -15,7 +15,7 @@ private:
 	std::map<int, bool>key_status;
 	GLFWwindow* window{ nullptr };
 public:
-	GL(const std::string&, const int, const int, const bool, const int);
+	GL(const std::string&, const int, const int, const bool, const int display_ix = 0);
 	~GL();
 
 	GL& Init(const std::string&, const int, const int, const bool, const int display_ix = 0);

@@ -1,6 +1,7 @@
 #include "GL.h"
 #include "include/GL/glew.h"
 #include "include/GLFW/glfw3.h"
+#include "Triangle.h"
 #include <string>
 #include <iostream>
 
@@ -147,6 +148,7 @@ bool GL::isKeyPressedAndReleased(const int& key) {
 		key_status[key] = true;
 		return false;
 	}
+	
 }
 
 void GL::preDraw() {
@@ -170,17 +172,29 @@ void GL::run() {
 		Init("Canvas", 1280, 960, false);
 	}
 
+	Triangle triangle;
+	if (!triangle.InitShader()) {
+		std::cerr << "Error: Shader积己 角菩" << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
+
+	if (!triangle.defineVertexArrayObject()) {
+		std::cerr << "Error: Shader积己 角菩" << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
+
+	triangle.userProgramAndBind();
+
 	// main loop 
 	while (!glfwWindowShouldClose(window)) {
 		handleKeyPress();
-		/*if (isKeyPressed(GLFW_KEY_ESCAPE)) {
-			std::cout << "ESC key ends main loop" << std::endl;
-			break;
-		}*/
-
+		
 		preDraw();
 
 		//update();	// the major worker function
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glPopMatrix();
 
@@ -188,6 +202,7 @@ void GL::run() {
 		glfwSwapBuffers(window); // double buffering
 		glfwPollEvents();
 	}
+	triangle.terminate();
 
 	glfwTerminate();
 }
