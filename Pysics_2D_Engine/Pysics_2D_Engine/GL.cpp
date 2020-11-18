@@ -172,6 +172,7 @@ void GL::run() {
 		Init("Canvas", 1280, 960, false);
 	}
 
+	// rectangle vertex
 	float position[] = {
 		-0.5f, 0.5f, 0.0f,
 		0.5f, 0.5f, 0.0f,
