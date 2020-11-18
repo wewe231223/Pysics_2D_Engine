@@ -1,7 +1,7 @@
 #include "GL.h"
 #include "include/GL/glew.h"
 #include "include/GLFW/glfw3.h"
-#include "Triangle.h"
+#include "Shader.h"
 #include <string>
 #include <iostream>
 
@@ -172,20 +172,41 @@ void GL::run() {
 		Init("Canvas", 1280, 960, false);
 	}
 
-	Triangle triangle;
-	if (!triangle.InitShader()) {
+	float position[] = {
+		-0.5f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f
+	};
+
+	float color[] = {
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f
+	};
+
+	GLuint elements[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	Shader object;
+	if (!object.InitShaderProgram()) {
+		std::cerr << "Error: Shader积己 角菩" << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
+	size_t v_size = sizeof(position) / sizeof(float);
+	size_t e_size = sizeof(elements) / sizeof(GLuint);
+
+	if (!object.defineVertexObject(position, color, v_size, elements, e_size)) {
 		std::cerr << "Error: Shader积己 角菩" << std::endl;
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
-	if (!triangle.defineVertexArrayObject()) {
-		std::cerr << "Error: Shader积己 角菩" << std::endl;
-		glfwTerminate();
-		exit(EXIT_FAILURE);
-	}
-
-	triangle.userProgramAndBind();
+	object.useProgramAndBind();
 
 	// main loop 
 	while (!glfwWindowShouldClose(window)) {
@@ -194,7 +215,7 @@ void GL::run() {
 		preDraw();
 
 		//update();	// the major worker function
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		object.drawObject();
 
 		glPopMatrix();
 
@@ -202,7 +223,7 @@ void GL::run() {
 		glfwSwapBuffers(window); // double buffering
 		glfwPollEvents();
 	}
-	triangle.terminate();
+	object.TerminateProgram();
 
 	glfwTerminate();
 }

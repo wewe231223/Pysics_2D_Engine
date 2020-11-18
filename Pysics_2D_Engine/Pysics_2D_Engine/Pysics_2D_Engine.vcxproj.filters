@@ -4,10 +4,10 @@
     <ClCompile Include="GL.cpp" />
     <ClCompile Include="소스.cpp" />
     <ClCompile Include="소스1.cpp" />
-    <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GL.h" />
-    <ClInclude Include="Triangle.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
 </Project>

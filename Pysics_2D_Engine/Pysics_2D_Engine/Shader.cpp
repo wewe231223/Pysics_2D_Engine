@@ -1,6 +1,6 @@
-#include "Triangle.h"
+#include "Shader.h"
 
-bool Triangle::InitShader() {
+bool Shader::InitShaderProgram() {
 	const GLchar* vertexShaderSource =
 		"#version 330 core\n"
 		"in vec3 positionAttribute;"
@@ -69,29 +69,26 @@ bool Triangle::InitShader() {
 	return true;
 }
 
-bool Triangle::defineVertexArrayObject() {
-	float position[] = {
-		0.0f,  0.5f, 0.0f, //vertex 1  위 중앙
-		0.5f, -0.5f, 0.0f, //vertex 2  오른쪽 아래
-		-0.5f, -0.5f, 0.0f //vertex 3  왼쪽 아래
-	};
-
-	float color[] = {
-		1.0f, 0.0f, 0.0f, //vertex 1 : RED (1,0,0)
-		0.0f, 1.0f, 0.0f, //vertex 2 : GREEN (0,1,0) 
-		0.0f, 0.0f, 1.0f  //vertex 3 : BLUE (0,0,1)
-	};
+bool Shader::defineVertexObject(const float* position, const float* color, size_t f_size, const GLuint* elements, size_t e_size) {
+	size_t vertex_size = sizeof(float) * f_size;
+	size_t elements_size = sizeof(GLuint) * e_size;
+	this->e_size = e_size;
 
 	glGenBuffers(1, &trianglePositionVertexBufferObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, trianglePositionVertexBufferObjectID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(position), position, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertex_size, position, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &triangleColorVertexBufferObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, triangleColorVertexBufferObjectID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertex_size, color, GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &triangleVertexArrayObject);
 	glBindVertexArray(triangleVertexArrayObject);
+
+	GLuint triangleElementBufferObject;
+	glGenBuffers(1, &triangleElementBufferObject);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleElementBufferObject);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements_size, elements, GL_STATIC_DRAW);
 
 
 	GLint positionAttribute = glGetAttribLocation(triangleShaderProgramID, "positionAttribute");
@@ -122,19 +119,18 @@ bool Triangle::defineVertexArrayObject() {
 	return true;
 }
 
-void Triangle::frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
-
-	framebufferWidth = width;
-	framebufferHeight = height;
-}
-
-void Triangle::userProgramAndBind() {
+void Shader::useProgramAndBind() {
 	glUseProgram(triangleShaderProgramID);
 	glBindVertexArray(triangleVertexArrayObject);
 }
 
-void Triangle::terminate() {
+void Shader::drawObject() {
+	glDrawElements(GL_TRIANGLES, e_size, GL_UNSIGNED_INT, 0);
+}
+
+void Shader::TerminateProgram() {
+	glUseProgram(0);
+	glBindVertexArray(0);
 	glDeleteProgram(triangleShaderProgramID);
 	glDeleteBuffers(1, &trianglePositionVertexBufferObjectID);
 	glDeleteBuffers(1, &triangleColorVertexBufferObjectID);
